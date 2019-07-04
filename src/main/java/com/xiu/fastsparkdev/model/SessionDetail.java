@@ -3,8 +3,8 @@ package com.xiu.fastsparkdev.model;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "session_detail")
+/*@Entity
+@Table(name = "session_detail")*/
 public class SessionDetail {
 
 	private long taskid;

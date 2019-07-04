@@ -4,8 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "task")
+/*@Entity
+@Table(name = "task")*/
 public class Task implements Serializable{
 
 	/**

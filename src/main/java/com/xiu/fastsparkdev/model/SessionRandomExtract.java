@@ -3,8 +3,8 @@ package com.xiu.fastsparkdev.model;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "session_random_extract")
+/*@Entity
+@Table(name = "session_random_extract")*/
 public class SessionRandomExtract {
 	private  long taskid;
 	private String sessionid; 

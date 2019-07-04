@@ -4,10 +4,10 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 /**
- * 
+ *
  */
-@Entity
-@Table(name = "top10_category")
+//@Entity
+//@Table(name = "top10_category")
 public class Top10Category {
 
 	private long taskid;
