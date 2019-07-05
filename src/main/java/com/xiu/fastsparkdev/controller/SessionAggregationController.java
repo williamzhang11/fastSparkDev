@@ -3,6 +3,8 @@ package com.xiu.fastsparkdev.controller;
 import com.xiu.fastsparkdev.model.Task;
 import com.xiu.fastsparkdev.service.SessionAggregationService;
 import com.xiu.fastsparkdev.service.TaskService;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-@RestController("/session")
+@RestController()
+@RequestMapping("/session")
 public class SessionAggregationController {
     @Autowired
     TaskService taskService;
@@ -28,8 +31,8 @@ public class SessionAggregationController {
             task  = taskOptional.get();
         }
 
-        sessionAggregationService.getActionRDDByDateRange(sqlContext,task);
-
+        JavaRDD<Row> actionRDD = sessionAggregationService.getActionRDDByDateRange(sqlContext,task);
+        actionRDD.foreach(v->{System.out.println(actionRDD);});
         return  null;
 
     }
