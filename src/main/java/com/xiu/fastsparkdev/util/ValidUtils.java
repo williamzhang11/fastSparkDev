@@ -1,5 +1,9 @@
 package com.xiu.fastsparkdev.util;
 
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.SQLContext;
+
 /**
  * 校验工具类
  * @author Administrator
@@ -104,5 +108,5 @@ public class ValidUtils {
 		
 		return false;
 	}
-	
+
 }

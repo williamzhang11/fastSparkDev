@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import com.xiu.fastsparkdev.util.DateUtils;
 import com.xiu.fastsparkdev.util.StringUtils;
+import org.apache.spark.SparkConf;
+import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
@@ -27,14 +29,14 @@ import org.apache.spark.sql.types.StructType;
 public class MockData {
 
 	/**
-	 * 弄你数据
+	 * 模拟数据
 	 * @param sc
 	 * @param sqlContext
 	 */
 	public static void mock(JavaSparkContext sc,
 			SQLContext sqlContext) {
-		List<Row> rows = new ArrayList<Row>();
-		
+		List<Row> rows = new ArrayList<>();
+
 		String[] searchKeywords = new String[] {"火锅", "蛋糕", "重庆辣子鸡", "重庆小面",
 				"呷哺呷哺", "新辣道鱼火锅", "国贸大厦", "太古商场", "日本料理", "温泉"};
 		String date = DateUtils.getTodayDate();
@@ -100,10 +102,9 @@ public class MockData {
 				DataTypes.createStructField("pay_product_ids", DataTypes.StringType, true)));
 
 		Dataset<Row> df = sqlContext.createDataFrame(rowsRDD, schema);
-		
-		df.registerTempTable("user_visit_action");  
-			System.out.println(df.take(1));
-
+		//df.registerTempTable("user_visit_action");
+		System.err.println(df.takeAsList(1));
+		//df.foreach(v->{System.err.println(v);});
 		/**
 		 * ==================================================================
 		 */
@@ -136,9 +137,20 @@ public class MockData {
 				DataTypes.createStructField("sex", DataTypes.StringType, true)));
 
 		Dataset<Row> df2 = sqlContext.createDataFrame(rowsRDD, schema2);
-		System.out.println(df2.take(1));
+		//df2.registerTempTable("user_info");
+		//System.err.println(df2.take(0));
 
-		df2.registerTempTable("user_info");  
+		System.err.println(df2.takeAsList(1));
+
+	}
+
+	public static void main(String[] args){
+		SparkConf conf = new SparkConf().setMaster("local").setAppName("distinct算子");
+		JavaSparkContext sc = new JavaSparkContext(conf);
+		sc.setLogLevel("ERROR");
+		SQLContext sqlContext = new SQLContext(sc);
+		mock(sc,sqlContext);
+		sc.close();
 	}
 	
 }
