@@ -9,7 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:myconfig.properties")
 public class MyLocalConfig {
 
-    @Value("spring.spark.local")
+    @Value("${spring.spark.local}")
     private String sparkLocal;
 
     @Bean

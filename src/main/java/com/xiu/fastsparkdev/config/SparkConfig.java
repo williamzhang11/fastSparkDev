@@ -25,6 +25,9 @@ public class SparkConfig {
     }
     @Bean
     public SQLContext sqlContext(){
+
+        System.out.println(myConfig.getSparkLocal());
+
         if("true".equals(myConfig.getSparkLocal())){
             return new SQLContext(javaSparkContext);
         }else {
