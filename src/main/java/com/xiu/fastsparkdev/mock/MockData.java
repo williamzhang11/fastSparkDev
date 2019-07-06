@@ -102,7 +102,7 @@ public class MockData {
 				DataTypes.createStructField("pay_product_ids", DataTypes.StringType, true)));
 
 		Dataset<Row> df = sqlContext.createDataFrame(rowsRDD, schema);
-		//df.registerTempTable("user_visit_action");
+		df.registerTempTable("user_visit_action");
 		System.err.println(df.takeAsList(1));
 		//df.foreach(v->{System.err.println(v);});
 		/**
@@ -137,7 +137,7 @@ public class MockData {
 				DataTypes.createStructField("sex", DataTypes.StringType, true)));
 
 		Dataset<Row> df2 = sqlContext.createDataFrame(rowsRDD, schema2);
-		//df2.registerTempTable("user_info");
+		df2.registerTempTable("user_info");
 		//System.err.println(df2.take(0));
 
 		System.err.println(df2.takeAsList(1));

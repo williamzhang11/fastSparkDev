@@ -167,7 +167,7 @@ public class SessionAggrStat implements Serializable{
 	public void setStep_length_30_60_ratio(double step_length_30_60_ratio) {
 		this.step_length_30_60_ratio = step_length_30_60_ratio;
 	}
-	@Column(name = "60")
+	@Column(name = "60_")
 	public double getStep_length_60_ratio() {
 		return step_length_60_ratio;
 	}
