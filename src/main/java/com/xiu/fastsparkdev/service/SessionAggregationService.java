@@ -27,10 +27,23 @@ public interface SessionAggregationService extends Serializable{
      * @param actionRDD
      * @return
      */
-    JavaPairRDD<String,String> aggregateBySession(SQLContext sqlContext, JavaRDD<Row>actionRDD);
+    JavaPairRDD<String,String> aggregateBySession(SQLContext sqlContext, JavaPairRDD<String, Row> sessionid2actionRDD);
 
     JavaPairRDD<String,String> filterSessionAndAggrStat(JavaPairRDD<String,String> sessionid2AggrInfoRDD,
                                                         JSONObject taskParam, Accumulator<String> sessionAggrStatAccumulator);
 
+    /**
+     * 随机抽取session
+     * @param taskid
+     * @param sessionid2AggrInfoRDD
+     * @param sessionid2actionRDD
+     */
+    void randomExtractSession(Task task,JavaPairRDD<String,String> sessionid2AggrInfoRDD,
+                              JavaPairRDD<String,Row> sessionid2actionRDD);
+
+    void getTop10Category(
+            Task task,
+            JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD,
+            JavaPairRDD<String, Row> sessionid2actionRDD);
 
 }

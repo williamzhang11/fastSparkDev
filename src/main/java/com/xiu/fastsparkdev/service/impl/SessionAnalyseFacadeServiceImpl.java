@@ -1,0 +1,94 @@
+package com.xiu.fastsparkdev.service.impl;
+
+
+import com.alibaba.fastjson.JSONObject;
+import com.xiu.fastsparkdev.mock.MockData;
+import com.xiu.fastsparkdev.model.Task;
+import com.xiu.fastsparkdev.service.*;
+import com.xiu.fastsparkdev.util.SessionAggrStatAccumulator1;
+import org.apache.spark.Accumulator;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SQLContext;
+import org.codehaus.janino.Java;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import scala.Tuple2;
+
+import java.util.Optional;
+
+@Service
+public class SessionAnalyseFacadeServiceImpl implements SessionAnalyseFacadeService{
+
+    @Autowired
+    TaskService taskService;
+    @Autowired
+    SessionAggregationService sessionAggregationService;
+    @Autowired
+    SQLContext sqlContext;
+
+    @Autowired
+    SessionAggrStatService sessionAggrStatService;
+
+    @Autowired
+    private transient JavaSparkContext javaSparkContext;
+
+    @Autowired
+    SessionRandomExtractService sessionRandomExtractService;
+
+    @Override
+    public JavaPairRDD<String, Row> aggregationByCondition(Task task) throws Exception{
+
+        MockData.mock(javaSparkContext,sqlContext);
+        JavaRDD<Row> actionRDD = sessionAggregationService.getActionRDDByDateRange(sqlContext,task);
+
+        return actionRDD.mapToPair( row ->{
+            return new Tuple2<String,Row>(row.getString(2),row);
+        });
+
+
+    }
+
+    @Override
+    public JavaPairRDD<String, String> aggregationSession(Task task, JavaPairRDD<String, Row> sessionid2actionRDD) {
+
+        JavaPairRDD<String,String> sessionid2AggrInfoRDD =
+                sessionAggregationService.aggregateBySession(sqlContext,sessionid2actionRDD);
+
+        Accumulator<String> sessionAgrStatAccumulator =
+                javaSparkContext.accumulator("",new SessionAggrStatAccumulator1());
+
+        JSONObject taskParam = JSONObject.parseObject(task.getTaskParam());
+        //根据过滤条件进行筛选，并用累加器统计访问步长与时间
+        JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD = sessionAggregationService.filterSessionAndAggrStat(
+                sessionid2AggrInfoRDD, taskParam, sessionAgrStatAccumulator);
+
+        sessionAggrStatService.saveSessionAggrStat(sessionAgrStatAccumulator,task);
+
+        return  filteredSessionid2AggrInfoRDD;
+
+    }
+
+    @Override
+    public JavaPairRDD<String, String> sessionRandomExtract(Task task) throws Exception {
+
+        JavaPairRDD<String,Row>  sessionid2actionRDD = aggregationByCondition(task);
+         JavaPairRDD<String, String> sessionid2AggrInfoRDD =aggregationSession(task, sessionid2actionRDD);
+        sessionAggregationService.randomExtractSession(task,sessionid2AggrInfoRDD,sessionid2actionRDD);
+        return null;
+    }
+
+
+    @Override
+    public JavaPairRDD<String, String> top10(Task task) throws Exception {
+        JavaPairRDD<String,Row>  sessionid2actionRDD = aggregationByCondition(task);
+        JavaPairRDD<String, String> sessionid2AggrInfoRDD =aggregationSession(task, sessionid2actionRDD);
+        sessionAggregationService.randomExtractSession(task,sessionid2AggrInfoRDD,sessionid2actionRDD);
+        sessionAggregationService.getTop10Category(task,sessionid2AggrInfoRDD,sessionid2actionRDD);
+
+
+        return null;
+    }
+}

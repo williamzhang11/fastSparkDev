@@ -4,7 +4,9 @@ import com.xiu.fastsparkdev.model.SessionAggrStat;
 import com.xiu.fastsparkdev.model.Task;
 import org.apache.spark.Accumulator;
 
-public interface SessionAggrStatService {
+import java.io.Serializable;
 
-    public SessionAggrStat saveSessionAggrStat(Accumulator<String> sessionAgrStatAccumulator, Task task);
+public interface SessionAggrStatService extends Serializable {
+
+    SessionAggrStat saveSessionAggrStat(Accumulator<String> sessionAgrStatAccumulator, Task task);
 }
