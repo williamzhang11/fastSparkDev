@@ -34,9 +34,8 @@ public class SessionAggregationController implements java.io.Serializable{
             task  = taskOptional.get();
         }
 
-        JavaPairRDD<String, Row> session= sessionAnalyseFacadeService.aggregationByCondition(task);
-
-        return sessionAnalyseFacadeService.aggregationSession(task,session).toString();
+        JavaPairRDD<String, Row> sessionid2actionRDD= sessionAnalyseFacadeService.aggregationByCondition(task);
+        return sessionAnalyseFacadeService.aggregationSession(task,sessionid2actionRDD).toString();
     }
     @RequestMapping("/sessionrandomextract")
     public String sessionRandomExtract(Long taskid) throws Exception{

@@ -96,7 +96,7 @@ public class SessionAggrStatServiceImpl implements SessionAggrStatService{
 
             // 将统计结果封装为Domain对象
             SessionAggrStat sessionAggrStat = new SessionAggrStat();
-            sessionAggrStat.setTaskid(task.getTaskid());
+            sessionAggrStat.setTaskid(task.getId());
             sessionAggrStat.setSession_count(session_count);
             sessionAggrStat.setVisit_length_1s_3s_ratio(visit_length_1s_3s_ratio);
             sessionAggrStat.setVisit_length_4s_6s_ratio(visit_length_4s_6s_ratio);

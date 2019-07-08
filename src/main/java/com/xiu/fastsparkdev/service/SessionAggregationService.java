@@ -7,6 +7,7 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
+import scala.Tuple2;
 
 import java.io.Serializable;
 
@@ -38,8 +39,8 @@ public interface SessionAggregationService extends Serializable{
      * @param sessionid2AggrInfoRDD
      * @param sessionid2actionRDD
      */
-    void randomExtractSession(Task task,JavaPairRDD<String,String> sessionid2AggrInfoRDD,
-                              JavaPairRDD<String,Row> sessionid2actionRDD);
+    JavaPairRDD<String, Tuple2<String,Row>> randomExtractSession(Task task, JavaPairRDD<String,String> sessionid2AggrInfoRDD,
+                                                                 JavaPairRDD<String,Row> sessionid2actionRDD);
 
     void getTop10Category(
             Task task,

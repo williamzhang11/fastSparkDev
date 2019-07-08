@@ -296,7 +296,7 @@ public class SessionAggregationServiceImpl implements SessionAggregationService,
 
 
     @Override
-    public void randomExtractSession(Task task, JavaPairRDD<String, String> sessionid2AggrInfoRDD, JavaPairRDD<String, Row> sessionid2actionRDD) {
+    public JavaPairRDD<String,Tuple2<String,Row>> randomExtractSession(Task task, JavaPairRDD<String, String> sessionid2AggrInfoRDD, JavaPairRDD<String, Row> sessionid2actionRDD) {
 
         JavaPairRDD<String,String> time2sessionRDD = sessionid2AggrInfoRDD.mapToPair((Tuple2<String,String> tuple)->{
 
@@ -403,7 +403,7 @@ public class SessionAggregationServiceImpl implements SessionAggregationService,
 
                     // 将数据写入MySQL
                     SessionRandomExtract sessionRandomExtract = new SessionRandomExtract();
-                    sessionRandomExtract.setTaskid(task.getTaskid());
+                    sessionRandomExtract.setTaskid(task.getId());
                     sessionRandomExtract.setSessionid(sessionid);
                     sessionRandomExtract.setStartTime(StringUtils.getFieldFromConcatString(
                             sessionAggrInfo, "\\|", Constants.FIELD_START_TIME));
@@ -422,26 +422,8 @@ public class SessionAggregationServiceImpl implements SessionAggregationService,
 
 
         JavaPairRDD<String,Tuple2<String,Row>> extractSessionDetailRDD = extractSessionidsRDD.join(sessionid2actionRDD);
-        extractSessionDetailRDD.foreach((Tuple2<String,Tuple2<String,Row>> tuple)->{
 
-            Row row = tuple._2._2;
-            if(row !=null) {
-                SessionDetail sessionDetail = new SessionDetail();
-                //sessionDetail.setTaskid(task.getTaskid());
-                sessionDetail.setUserid(row.isNullAt(1) ? 0L : row.getLong(1));
-                sessionDetail.setSessionid(row.isNullAt(2) ? null : row.getString(2));
-                sessionDetail.setPageid(row.isNullAt(3) ? 0L : row.getLong(3));
-                sessionDetail.setActionTime(row.isNullAt(4) ? null : row.getString(4));
-                sessionDetail.setSearchKeyword(row.isNullAt(5) ? null : row.getString(5));
-                sessionDetail.setClickCategoryId(row.isNullAt(6) ? 0L : row.getLong(6));
-                sessionDetail.setClickProductId(row.isNullAt(7) ? 0L : row.getLong(7));
-                sessionDetail.setOrderCategoryIds(row.isNullAt(8) ? null : row.getString(8));
-                sessionDetail.setOrderProductIds(row.isNullAt(9) ? null : row.getString(9));
-                sessionDetail.setPayCategoryIds(row.isNullAt(10) ? null : row.getString(10));
-                sessionDetail.setPayProductIds(row.isNullAt(11) ? null : row.getString(11));
-                sessionDetailService.saveSessionDetail(sessionDetail);
-            }
-        });
+        return extractSessionDetailRDD;
     }
 
 

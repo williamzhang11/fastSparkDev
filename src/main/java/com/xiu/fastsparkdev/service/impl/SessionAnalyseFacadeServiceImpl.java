@@ -38,6 +38,9 @@ public class SessionAnalyseFacadeServiceImpl implements SessionAnalyseFacadeServ
     @Autowired
     SessionRandomExtractService sessionRandomExtractService;
 
+    @Autowired
+    SessionDetailService sessionDetailService;
+
     @Override
     public JavaPairRDD<String, Row> aggregationByCondition(Task task) throws Exception{
 
@@ -64,7 +67,7 @@ public class SessionAnalyseFacadeServiceImpl implements SessionAnalyseFacadeServ
         //根据过滤条件进行筛选，并用累加器统计访问步长与时间
         JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD = sessionAggregationService.filterSessionAndAggrStat(
                 sessionid2AggrInfoRDD, taskParam, sessionAgrStatAccumulator);
-
+        System.err.println("count="+filteredSessionid2AggrInfoRDD.count());
         sessionAggrStatService.saveSessionAggrStat(sessionAgrStatAccumulator,task);
 
         return  filteredSessionid2AggrInfoRDD;
@@ -76,7 +79,11 @@ public class SessionAnalyseFacadeServiceImpl implements SessionAnalyseFacadeServ
 
         JavaPairRDD<String,Row>  sessionid2actionRDD = aggregationByCondition(task);
          JavaPairRDD<String, String> sessionid2AggrInfoRDD =aggregationSession(task, sessionid2actionRDD);
-        sessionAggregationService.randomExtractSession(task,sessionid2AggrInfoRDD,sessionid2actionRDD);
+         System.err.println("sessionRandomExtract count:"+sessionid2actionRDD.count());
+        JavaPairRDD<String,Tuple2<String,Row>> extractSessionDetailRDD =sessionAggregationService.
+                randomExtractSession(task,sessionid2AggrInfoRDD,sessionid2actionRDD);
+        sessionDetailService.saveSessionDetail(extractSessionDetailRDD);
+
         return null;
     }
 
@@ -87,7 +94,6 @@ public class SessionAnalyseFacadeServiceImpl implements SessionAnalyseFacadeServ
         JavaPairRDD<String, String> sessionid2AggrInfoRDD =aggregationSession(task, sessionid2actionRDD);
         sessionAggregationService.randomExtractSession(task,sessionid2AggrInfoRDD,sessionid2actionRDD);
         sessionAggregationService.getTop10Category(task,sessionid2AggrInfoRDD,sessionid2actionRDD);
-
 
         return null;
     }
