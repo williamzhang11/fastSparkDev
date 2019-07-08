@@ -2,6 +2,7 @@ package com.xiu.fastsparkdev.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 存储随机抽取出来的session的明细数据、top10品类的session的明细数据
@@ -10,15 +11,15 @@ import java.io.Serializable;
 @Entity
 @Table(name = "session_detail")
 public class SessionDetail implements Serializable {
-	private long id;
-	private long taskid;
-	private long userid;
+	private Long id;
+	private Long taskid;
+	private Long userid;
 	private String sessionid;
-	private long pageid;
+	private Long pageid;
 	private String actionTime;
 	private String searchKeyword;
-	private long clickCategoryId;
-	private long clickProductId;
+	private Long clickCategoryId;
+	private Long clickProductId;
 	private String orderCategoryIds;
 	private String orderProductIds;
 	private String payCategoryIds;
@@ -27,25 +28,25 @@ public class SessionDetail implements Serializable {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue( strategy= GenerationType.AUTO)
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	@Column(name = "task_id")
-	public long getTaskid() {
+	public Long getTaskid() {
 		return taskid;
 	}
-	public void setTaskid(long taskid) {
+	public void setTaskid(Long taskid) {
 		this.taskid = taskid;
 	}
 	@Column(name = "user_id")
-	public long getUserid() {
+	public Long getUserid() {
 		return userid;
 	}
-	public void setUserid(long userid) {
+	public void setUserid(Long userid) {
 		this.userid = userid;
 	}
 	@Column(name = "session_id")
@@ -56,10 +57,10 @@ public class SessionDetail implements Serializable {
 		this.sessionid = sessionid;
 	}
 	@Column(name = "page_id")
-	public long getPageid() {
+	public Long getPageid() {
 		return pageid;
 	}
-	public void setPageid(long pageid) {
+	public void setPageid(Long pageid) {
 		this.pageid = pageid;
 	}
 	@Column(name = "action_time")
@@ -70,17 +71,17 @@ public class SessionDetail implements Serializable {
 		this.actionTime = actionTime;
 	}
 	@Column(name = "click_category_id")
-	public long getClickCategoryId() {
+	public Long getClickCategoryId() {
 		return clickCategoryId;
 	}
-	public void setClickCategoryId(long clickCategoryId) {
+	public void setClickCategoryId(Long clickCategoryId) {
 		this.clickCategoryId = clickCategoryId;
 	}
 	@Column(name = "click_product_id")
-	public long getClickProductId() {
+	public Long getClickProductId() {
 		return clickProductId;
 	}
-	public void setClickProductId(long clickProductId) {
+	public void setClickProductId(Long clickProductId) {
 		this.clickProductId = clickProductId;
 	}
 	@Column(name = "search_keyword")
@@ -118,6 +119,49 @@ public class SessionDetail implements Serializable {
 	public void setPayProductIds(String payProductIds) {
 		this.payProductIds = payProductIds;
 	}
-	
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof SessionDetail)) return false;
+		SessionDetail that = (SessionDetail) o;
+		return getId() == that.getId() &&
+				getTaskid() == that.getTaskid() &&
+				getUserid() == that.getUserid() &&
+				getPageid() == that.getPageid() &&
+				getClickCategoryId() == that.getClickCategoryId() &&
+				getClickProductId() == that.getClickProductId() &&
+				Objects.equals(getSessionid(), that.getSessionid()) &&
+				Objects.equals(getActionTime(), that.getActionTime()) &&
+				Objects.equals(getSearchKeyword(), that.getSearchKeyword()) &&
+				Objects.equals(getOrderCategoryIds(), that.getOrderCategoryIds()) &&
+				Objects.equals(getOrderProductIds(), that.getOrderProductIds()) &&
+				Objects.equals(getPayCategoryIds(), that.getPayCategoryIds()) &&
+				Objects.equals(getPayProductIds(), that.getPayProductIds());
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(getId(), getTaskid(), getUserid(), getSessionid(), getPageid(), getActionTime(), getSearchKeyword(), getClickCategoryId(), getClickProductId(), getOrderCategoryIds(), getOrderProductIds(), getPayCategoryIds(), getPayProductIds());
+	}
+
+	@Override
+	public String toString() {
+		return "SessionDetail{" +
+				"id=" + id +
+				", taskid=" + taskid +
+				", userid=" + userid +
+				", sessionid='" + sessionid + '\'' +
+				", pageid=" + pageid +
+				", actionTime='" + actionTime + '\'' +
+				", searchKeyword='" + searchKeyword + '\'' +
+				", clickCategoryId=" + clickCategoryId +
+				", clickProductId=" + clickProductId +
+				", orderCategoryIds='" + orderCategoryIds + '\'' +
+				", orderProductIds='" + orderProductIds + '\'' +
+				", payCategoryIds='" + payCategoryIds + '\'' +
+				", payProductIds='" + payProductIds + '\'' +
+				'}';
+	}
 }

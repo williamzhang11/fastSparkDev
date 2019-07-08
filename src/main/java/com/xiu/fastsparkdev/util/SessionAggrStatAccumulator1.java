@@ -5,7 +5,7 @@ import org.apache.spark.AccumulatorParam;
 
 import java.io.Serializable;
 
-public class SessionAggrStatAccumulator1 implements AccumulatorParam<String>,Serializable {
+public class SessionAggrStatAccumulator1 implements AccumulatorParam<String>{
     @Override
     public String addInPlace(String v1, String v2) {
         return add(v1, v2);

@@ -10,4 +10,6 @@ import java.io.Serializable;
 public interface SessionDetailService extends Serializable {
 
     SessionDetail saveSessionDetail(JavaPairRDD<String,Tuple2<String,Row>> extractSessionDetailRDD);
+
+    SessionDetail saveSessionDetail(SessionDetail sessionDetail);
 }

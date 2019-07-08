@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import scala.Tuple2;
 
-import java.util.Optional;
-
 @Service
 public class SessionAnalyseFacadeServiceImpl implements SessionAnalyseFacadeService{
 
@@ -33,7 +31,7 @@ public class SessionAnalyseFacadeServiceImpl implements SessionAnalyseFacadeServ
     SessionAggrStatService sessionAggrStatService;
 
     @Autowired
-    private transient JavaSparkContext javaSparkContext;
+    private JavaSparkContext javaSparkContext;
 
     @Autowired
     SessionRandomExtractService sessionRandomExtractService;
