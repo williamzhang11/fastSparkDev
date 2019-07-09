@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.xiu.fastsparkdev.mock.MockData;
 import com.xiu.fastsparkdev.model.Task;
 import com.xiu.fastsparkdev.service.*;
+import com.xiu.fastsparkdev.util.CategorySortKey;
 import com.xiu.fastsparkdev.util.SessionAggrStatAccumulator1;
 import org.apache.spark.Accumulator;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -16,6 +17,8 @@ import org.codehaus.janino.Java;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import scala.Tuple2;
+
+import java.util.List;
 
 @Service
 public class SessionAnalyseFacadeServiceImpl implements SessionAnalyseFacadeService{
@@ -97,4 +100,5 @@ public class SessionAnalyseFacadeServiceImpl implements SessionAnalyseFacadeServ
 
         return null;
     }
+
 }

@@ -66,9 +66,9 @@ public class SessionDetailServiceImpl implements SessionDetailService, Serializa
 
     }
 
-
     @Override
-    public SessionDetail saveSessionDetail(SessionDetail sessionDetail) {
-        return sessionDetailDao.save(sessionDetail);
+    public List<SessionDetail>  saveAllSessionDetail(List<SessionDetail> sessionDetail) {
+
+        return sessionDetailDao.saveAll(sessionDetail);
     }
 }

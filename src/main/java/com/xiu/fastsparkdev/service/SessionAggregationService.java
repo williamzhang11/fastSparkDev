@@ -2,14 +2,17 @@ package com.xiu.fastsparkdev.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xiu.fastsparkdev.model.Task;
+import com.xiu.fastsparkdev.util.CategorySortKey;
 import org.apache.spark.Accumulator;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import scala.Tuple2;
 
 import java.io.Serializable;
+import java.util.List;
 
 public interface SessionAggregationService extends Serializable{
 
@@ -57,6 +60,12 @@ public interface SessionAggregationService extends Serializable{
             JavaPairRDD<Long, Long> clickCategoryId2CountRDD,
             JavaPairRDD<Long, Long> orderCategoryId2CountRDD,
             JavaPairRDD<Long, Long> payCategoryId2CountRDD);
+
+    void getTop10Session(
+            JavaSparkContext sc,
+            final long taskid,
+            List<Tuple2<CategorySortKey, String>> top10CategoryList,
+            JavaPairRDD<String, Row> sessionid2detailRDD);
 
 
 }

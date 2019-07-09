@@ -15,4 +15,5 @@ public interface SessionAnalyseFacadeService extends Serializable {
     JavaPairRDD<String,String> sessionRandomExtract(Task task)throws Exception;
 
     JavaPairRDD<String,String> top10(Task task)throws Exception;
+
 }
