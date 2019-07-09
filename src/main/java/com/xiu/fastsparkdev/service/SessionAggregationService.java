@@ -42,9 +42,21 @@ public interface SessionAggregationService extends Serializable{
     JavaPairRDD<String, Tuple2<String,Row>> randomExtractSession(Task task, JavaPairRDD<String,String> sessionid2AggrInfoRDD,
                                                                  JavaPairRDD<String,Row> sessionid2actionRDD);
 
-    void getTop10Category(
-            Task task,
-            JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD,
+    void getTop10Category(Task task,JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD,
             JavaPairRDD<String, Row> sessionid2actionRDD);
+
+     JavaPairRDD<Long, Long> getClickCategoryId2CountRDD(JavaPairRDD<String, Row> sessionid2detailRDD);
+
+     JavaPairRDD<Long, Long> getOrderCategoryId2CountRDD(JavaPairRDD<String, Row> sessionid2detailRDD);
+
+     JavaPairRDD<Long, Long> getPayCategoryId2CountRDD(JavaPairRDD<String, Row> sessionid2detailRDD);
+
+
+    JavaPairRDD<Long, String> joinCategoryAndData(
+            JavaPairRDD<Long, Long> categoryidRDD,
+            JavaPairRDD<Long, Long> clickCategoryId2CountRDD,
+            JavaPairRDD<Long, Long> orderCategoryId2CountRDD,
+            JavaPairRDD<Long, Long> payCategoryId2CountRDD);
+
 
 }

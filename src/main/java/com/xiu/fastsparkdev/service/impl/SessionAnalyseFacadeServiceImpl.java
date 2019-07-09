@@ -43,8 +43,9 @@ public class SessionAnalyseFacadeServiceImpl implements SessionAnalyseFacadeServ
     public JavaPairRDD<String, Row> aggregationByCondition(Task task) throws Exception{
 
         MockData.mock(javaSparkContext,sqlContext);
+        //获取actionRDD
         JavaRDD<Row> actionRDD = sessionAggregationService.getActionRDDByDateRange(sqlContext,task);
-
+        //<session_id,actionrow>
         return actionRDD.mapToPair( row ->{
             return new Tuple2<String,Row>(row.getString(2),row);
         });
@@ -76,6 +77,7 @@ public class SessionAnalyseFacadeServiceImpl implements SessionAnalyseFacadeServ
     public JavaPairRDD<String, String> sessionRandomExtract(Task task) throws Exception {
 
         JavaPairRDD<String,Row>  sessionid2actionRDD = aggregationByCondition(task);
+        //根据条件筛选出符合的<sessionid,AggrInfo>
          JavaPairRDD<String, String> sessionid2AggrInfoRDD =aggregationSession(task, sessionid2actionRDD);
          System.err.println("sessionRandomExtract count:"+sessionid2actionRDD.count());
         JavaPairRDD<String,Tuple2<String,Row>> extractSessionDetailRDD =sessionAggregationService.

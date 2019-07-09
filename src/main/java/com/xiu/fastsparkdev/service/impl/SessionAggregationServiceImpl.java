@@ -429,14 +429,153 @@ public class SessionAggregationServiceImpl implements SessionAggregationService,
 
     @Override
     public void getTop10Category(Task task, JavaPairRDD<String, String> filteredSessionid2AggrInfoRDD, JavaPairRDD<String, Row> sessionid2actionRDD) {
-
+        //第一步：获取符合条件的session访问过的所有品类
         JavaPairRDD<String, Row> sessionid2detailRDD =filteredSessionid2AggrInfoRDD.join(sessionid2actionRDD).mapToPair((Tuple2<String, Tuple2<String, Row>> tuple)->
         {
             return new Tuple2<String, Row>(tuple._1, tuple._2._2);
         });
+        //获取所有session访问过的所有品类id
+        JavaPairRDD<Long,Long> categoryidRDD = sessionid2detailRDD.flatMapToPair((Tuple2<String,Row> tuple)->{
+
+            Row row = tuple._2;
+            List<Tuple2<Long,Long>> list = new ArrayList<>();
+            Long clickCategoryId = row.getLong(6);
+            if(clickCategoryId != null){
+                list.add(new Tuple2<Long,Long>(clickCategoryId,clickCategoryId));
+            }
+
+            String orderCategoryIds = row.getString(8);
+            if(orderCategoryIds != null) {
+                String[] orderCategoryIdsSplited = orderCategoryIds.split(",");
+                for(String orderCategoryId : orderCategoryIdsSplited) {
+                    list.add(new Tuple2<Long, Long>(Long.valueOf(orderCategoryId),
+                            Long.valueOf(orderCategoryId)));
+                }
+            }
+
+            String payCategoryIds = row.getString(10);
+            if(payCategoryIds != null) {
+                String[] payCategoryIdsSplited = payCategoryIds.split(",");
+                for(String payCategoryId : payCategoryIdsSplited) {
+                    list.add(new Tuple2<Long, Long>(Long.valueOf(payCategoryId),
+                            Long.valueOf(payCategoryId)));
+                }
+            }
+
+            return list.iterator();
+        });
+
+        categoryidRDD.distinct();
+
+        //第二步：计算各品类的点击，下单，支付次数
+        // 计算各个品类的点击次数
+        JavaPairRDD<Long, Long> clickCategoryId2CountRDD =
+                getClickCategoryId2CountRDD(sessionid2detailRDD);
+        // 计算各个品类的下单次数
+        JavaPairRDD<Long, Long> orderCategoryId2CountRDD =
+                getOrderCategoryId2CountRDD(sessionid2detailRDD);
+        // 计算各个品类的支付次数
+        JavaPairRDD<Long, Long> payCategoryId2CountRDD =
+                getPayCategoryId2CountRDD(sessionid2detailRDD);
+
+        categoryidRDD.leftOuterJoin(clickCategoryId2CountRDD);
+
+
+
+
+
+    }
+
+
+    @Override
+    public JavaPairRDD<Long, Long> getClickCategoryId2CountRDD(JavaPairRDD<String, Row> sessionid2detailRDD) {
+        JavaPairRDD<String,Row> clickActionRDD = sessionid2detailRDD.filter((Tuple2<String,Row>tuple)->{
+            Row row = tuple._2;
+            return row.get(6)!=null ?true:false;
+        });
+
+        JavaPairRDD<Long, Long> clickCategoryIdRDD =clickActionRDD.mapToPair((Tuple2<String,Row> tuple)->{
+            long clickCategoryId = tuple._2.getLong(6);
+            return new Tuple2<Long, Long>(clickCategoryId, 1L);
+        });
+        JavaPairRDD<Long, Long> clickCategoryId2CountRDD = clickCategoryIdRDD.reduceByKey(
+                (Long v1,Long v2)->{return  v1+v2;}
+                );
+
+        return clickCategoryId2CountRDD;
+    }
+
+    @Override
+    public JavaPairRDD<Long, Long> getOrderCategoryId2CountRDD(JavaPairRDD<String, Row> sessionid2detailRDD) {
+
+        JavaPairRDD<String,Row> orderActionRDD = sessionid2detailRDD.filter((Tuple2<String,Row>tuple)->{
+            Row row = tuple._2;
+            return row.get(8)!=null ?true:false;
+        });
+        JavaPairRDD<Long, Long> orderCategoryIdRDD = orderActionRDD.flatMapToPair(
+
+                (Tuple2<String, Row> tuple)->{
+                    Row row = tuple._2;
+                    String orderCategoryIds = row.getString(8);
+                    String[] orderCategoryIdsSplited = orderCategoryIds.split(",");
+
+                    List<Tuple2<Long, Long>> list = new ArrayList<Tuple2<Long, Long>>();
+
+                    for(String orderCategoryId : orderCategoryIdsSplited) {
+                        list.add(new Tuple2<Long, Long>(Long.valueOf(orderCategoryId), 1L));
+                    }
+
+                    return list.iterator();
+                }
+        );
+
+        JavaPairRDD<Long, Long> orderCategoryId2CountRDD = orderCategoryIdRDD.reduceByKey(
+                (Long v1,Long v2)->{return  v1+v2;}
+        );
+
+        return orderCategoryId2CountRDD;
+    }
+
+    @Override
+    public JavaPairRDD<Long, Long> getPayCategoryId2CountRDD(JavaPairRDD<String, Row> sessionid2detailRDD) {
+        JavaPairRDD<String,Row> payActionRDD = sessionid2detailRDD.filter((Tuple2<String,Row>tuple)->{
+            Row row = tuple._2;
+            return row.get(10)!=null ?true:false;
+        });
+
+
+        JavaPairRDD<Long, Long> payCategoryIdRDD = payActionRDD.flatMapToPair(
+
+                (Tuple2<String, Row> tuple)->{
+                    Row row = tuple._2;
+                    String payCategoryIds = row.getString(8);
+                    String[] payCategoryIdsSplited = payCategoryIds.split(",");
+
+                    List<Tuple2<Long, Long>> list = new ArrayList<Tuple2<Long, Long>>();
+
+                    for(String payCategoryId : payCategoryIdsSplited) {
+                        list.add(new Tuple2<Long, Long>(Long.valueOf(payCategoryId), 1L));
+                    }
+
+                    return list.iterator();
+                }
+        );
+
+        JavaPairRDD<Long, Long> clickCategoryId2CountRDD = payCategoryIdRDD.reduceByKey(
+                (Long v1,Long v2)->{return  v1+v2;}
+        );
+
+        return clickCategoryId2CountRDD;
+    }
+
+
+    @Override
+    public JavaPairRDD<Long, String> joinCategoryAndData(JavaPairRDD<Long, Long> categoryidRDD, JavaPairRDD<Long, Long> clickCategoryId2CountRDD, JavaPairRDD<Long, Long> orderCategoryId2CountRDD, JavaPairRDD<Long, Long> payCategoryId2CountRDD) {
 
         
 
 
+
+        return null;
     }
 }
